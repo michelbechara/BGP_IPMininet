@@ -6,7 +6,7 @@ from ipmininet.ipnet import IPNet
 from mininet.log import setLogLevel, info
 from mininet.log import lg
 
-class BGP_FilterOut(IPTopo):
+class BGP_Ref(IPTopo):
 
     def build(self, *args, **kwargs):
 
@@ -112,7 +112,7 @@ class BGP_FilterOut(IPTopo):
         ebgp_session(self, as2r2, as1r2)
         ebgp_session(self, as2r3, as1r3)
 
-        super(BGP_FilterOut, self).build(*args, **kwargs)
+        super(BGP_Ref, self).build(*args, **kwargs)
 
     def bgp(self, name):
         r = self.addRouter(name, use_v4=False)
@@ -120,37 +120,12 @@ class BGP_FilterOut(IPTopo):
             AF_INET6(redistribute=('connected',)),))
         return r
 
-def run():
-    net = IPNet(topo=BGP_FilterOut(), use_v4=False)
-    net.start()
-    info( '*** Routing Table on Router:\n' )
 
-    as3r3=net.getNodeByName('as3r3')
-    as4r5=net.getNodeByName('as4r5')
-
-    info('starting zebra and ospfd service:\n')
-
-    as3r3.cmd('bgpd -f /home/michel/ipmininet/configfiles6/as3/as3r3bgp.conf')
-
-    as4r5.cmd('bgpd -f /home/michel/ipmininet/configfiles6/as4/as4r5bgp.conf')  
-    
-    IPCLI(net)
-    net.stop()
-    os.system("killall -9 ospfd zebra")
-    os.system("rm -f *api*")
-    os.system("rm -f *interface*")
-
-if __name__ == '__main__':
-    setLogLevel( 'info' )
-    ipmininet.DEBUG_FLAG = True
-    lg.setLogLevel("info")
-    run()
-
-# Start network
-#setLogLevel( 'info' )
-#ipmininet.DEBUG_FLAG = True
-#lg.setLogLevel("info")
-#net = IPNet(topo=ESIBTopo(), use_v4=False)
-#net.start()
-#IPCLI(net)
-#net.stop()
+#Start network
+setLogLevel( 'info' )
+ipmininet.DEBUG_FLAG = True
+lg.setLogLevel("info")
+net = IPNet(topo=BGP_Ref(), use_v4=False)
+net.start()
+IPCLI(net)
+net.stop()
